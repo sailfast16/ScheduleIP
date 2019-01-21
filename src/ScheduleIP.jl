@@ -114,7 +114,7 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
                 temp_dict[:job] = job
                 temp_dict[:lane_id] = machine
                 temp_dict[:start] = Int(floor(JuMP.value(S[job, machine])))
-                temp_dict[:fin] = Int(floor(JuMP.value(S[job, machine])))+Int(floor(p[job])))
+                temp_dict[:fin] = Int(floor(JuMP.value(S[job, machine])))+Int(floor(p[job]))
 
                 push!(assigned, temp_dict)
             end
