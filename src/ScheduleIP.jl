@@ -107,7 +107,6 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
 
     schedule = []
     for machine in 1:num_mcs
-        assigned = []
         for job in 1:num_jobs
             if JuMP.value(X[job, machine]) >= 1.0
                 temp_dict = Dict()
@@ -116,10 +115,7 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
                 temp_dict[:start] = Int(floor(JuMP.value(S[job, machine])))
                 temp_dict[:fin] = Int(floor(JuMP.value(S[job, machine])))+Int(floor(p[job]))
 
-                push!(assigned, temp_dict)
-            end
-            if job == num_jobs
-                push!(schedule, assigned)
+                push!(schedule, temp_dict)
             end
         end
     end
