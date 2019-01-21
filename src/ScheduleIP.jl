@@ -4,7 +4,7 @@ using JSON2
 using JuMP
 using CPLEX
 
-export solveSchedule, JuMP
+export solveSchedule
 
 function getjobinfo(filepath::String)
     open(filepath) do f
