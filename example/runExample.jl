@@ -6,4 +6,6 @@ schedule = solveSchedule("Input/MS-20-windowedJobs3.json", num_mcs)
 
 # Draw Solution
 lanes, max_length = tasksToLanes(schedule)
+
+@info "Saving Schedule Picture as [schedule.png]"
 drawSchedule("schedule.png", lanes, max_length)
