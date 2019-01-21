@@ -110,7 +110,7 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
         assigned = []
         for job in 1:num_jobs
             if JuMP.value(X[job, machine]) >= 1.0
-                push!(assigned, (job=job, machine=machine, start=JuMP.value(S[job, machine])))
+                push!(assigned, (job=job, lane_id=machine, start=Int(floor(JuMP.value(S[job, machine]))), fin=Int(floor(JuMP.value(S[job, machine]))+p[job_info])))
             end
             if job == num_jobs
                 push!(schedule, assigned)
