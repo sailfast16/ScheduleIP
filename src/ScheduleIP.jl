@@ -2,10 +2,9 @@ module ScheduleIP
 
 using JSON2
 using JuMP
-using JuMP: with_optimizer
 using CPLEX
 
-export solveSchedule
+export solveSchedule, JuMP.with_optimizer
 
 function getjobinfo(filepath::String)
     open(filepath) do f
