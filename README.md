@@ -11,5 +11,5 @@ Use CPLEX Solver with JuMP to solve Scheduling Problem
 ## Run the Example
 *The Example Folder gets downloaded to your local julia directory* 
 * In the Julia Command Prompt Run:
-  * using Pkg; Pkg.dir("ScheduleIP) 
+  * using Pkg; Pkg.dir("ScheduleIP") 
 * go to the output directory to find the Example Folder and open it in atom to run 
