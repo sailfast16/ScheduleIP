@@ -98,8 +98,7 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
             open("model.lp", "w") do f
                 print(f, model)
             end
-            @info
-            println("Objective Value: ", JuMP.objective_value(model))
+            @info "Objective Value" JuMP.objective_value(model)
         else
             # print(model)
             @warn "Model Exited With Status: $(JuMP.termination_status(model))"
