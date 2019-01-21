@@ -4,7 +4,10 @@ using JSON2
 using JuMP
 using CPLEX
 
-export solveSchedule, getjobinfo, getlanelength
+include("Visualization/draw.jl")
+using .Draw
+
+export solveSchedule, tasksToLanes, drawSchedule
 
 function getjobinfo(filepath::String)
     open(filepath) do f
@@ -99,6 +102,7 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
                 print(f, model)
             end
             @info "Objective Value" JuMP.objective_value(model)
+
         else
             # print(model)
             @warn "Model Exited With Status: $(JuMP.termination_status(model))"
@@ -122,5 +126,6 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
 
     return schedule
 end
+
 
 end

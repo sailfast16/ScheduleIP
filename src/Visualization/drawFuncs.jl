@@ -42,9 +42,9 @@ function tasksToLanes(schedule_list)
         for task in schedule_list
             if task[:lane_id] == lane_num
                 temp_task = Dict()
-                temp_task[:name] = task[:job][:name]
+                temp_task[:name] = task[:job]
                 temp_task[:lane] = task[:lane_id]
-                temp_task[:length] = task[:job][:length]
+                temp_task[:length] = task[:fin] - task[:start]
                 temp_task[:start] = task[:start]
                 temp_task[:fin] = task[:fin]
 
