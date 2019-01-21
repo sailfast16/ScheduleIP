@@ -32,8 +32,10 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
     lane_length = getlanelength(b)
     num_jobs = length(a)
 
+    println("Creating IP Model")
     model = Model(JuMP.with_optimizer(CPLEX.Optimizer))
 
+    println("Adding Variables to Model")
     # Job i on Machine k
     @variable(model, X[1:num_jobs, 1:num_mcs], Bin)
 
@@ -44,10 +46,11 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
     @variable(model, S[1:num_jobs, 1:num_mcs] >= 0)
 
     # Objective: Minimize ∑∑ X[i,k]
+    println("Setting Model Objective")
     w = sum(X);
     @objective(model, Min, w);
 
-
+    println("Adding Model Constraints")
     # Create Before/ After Constraint
     # Had to do it funny like this because there is no
     # ord(i) != ord(j) in JuMP
@@ -84,10 +87,12 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
     # Assign Constraint:
     @constraint(model, assign[i=1:num_jobs], [sum(X[i,k] for k in 1:num_mcs)] .== 1)
 
+    println("Attempting to Find Solution")
     optimize!(model)
 
     if verbose
         if JuMP.has_values(model)
+            println("Solution Found")
             # println(model)
             open("model.lp", "w") do f
                 print(f, model)
