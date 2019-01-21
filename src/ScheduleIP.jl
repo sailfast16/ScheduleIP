@@ -87,7 +87,7 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
     optimize!(model)
 
     if verbose
-        if JuMP.has_result_values(model)
+        if JuMP.has_values(model)
             println(model)
             println("Objective Value: ", JuMP.objective_value(model))
         else
@@ -100,8 +100,8 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
     for machine in 1:num_mcs
         assigned = []
         for job in 1:num_jobs
-            if JuMP.result_value(X[job, machine]) >= 1.0
-                push!(assigned, (job=job, machine=machine, start=JuMP.result_value(S[job, machine])))
+            if JuMP.value(X[job, machine]) >= 1.0
+                push!(assigned, (job=job, machine=machine, start=JuMP.value(S[job, machine])))
             end
             if job == num_jobs
                 push!(schedule, assigned)
