@@ -88,11 +88,15 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
 
     if verbose
         if JuMP.has_values(model)
-            println(model)
+            # println(model)
+            open("model.lp", "w") do f
+                print(f, model)
+            end
+            println("Model Saved to [model.lp]")
             println("Objective Value: ", JuMP.objective_value(model))
         else
-            print(model)
-            println(JuMP.termination_status(model))
+            # print(model)
+            println("Model Exited With Status: $(JuMP.termination_status(model))")
         end
     end
 
