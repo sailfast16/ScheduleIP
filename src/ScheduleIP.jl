@@ -7,7 +7,7 @@ using CPLEX
 include("Visualization/draw.jl")
 using .Draw
 
-export solveSchedule, tasksToLanes, drawSchedule
+export getjobinfo, solveSchedule, tasksToLanes, drawSchedule
 
 function getjobinfo(filepath::String)
     open(filepath) do f
@@ -30,13 +30,12 @@ function getlanelength(b)
     lane_length = maximum(b)
 end
 
-function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
-    a,b,p = getjobinfo(filepath)
+function solveSchedule(a,b,p, num_mcs::Int, num_threads::Int; verbose = true)
     lane_length = getlanelength(b)
     num_jobs = length(a)
 
     @info "Creating IP Model"
-    model = Model(JuMP.with_optimizer(CPLEX.Optimizer))
+    model = Model(with_optimizer(CPLEX.Optimizer, CPX_PARAM_MIPDISPLAY=3, CPX_PARAM_THREADS=num_threads))
 
     @info "Adding Variables to Model"
     # Job i on Machine k
@@ -88,19 +87,17 @@ function solveSchedule(filepath::String, num_mcs::Int; verbose = true)
     @constraint(model, End, [S[i,k] for k in 1:num_mcs for i in 1:num_jobs] .<= [(b[i]-p[i])*X[i,k] for k in 1:num_mcs for i in 1:num_jobs])
 
     # Assign Constraint:
-    @constraint(model, assign[i=1:num_jobs], [sum(X[i,k] for k in 1:num_mcs)] .== 1)
+    @constraint(model, assign[i=1:num_jobs], [sum(X[i,k] for k in 1:num_mcs)] .<= 1)
 
+    @info "Model: " model
     @info "Attempting to Find a Solution"
-    optimize!(model)
+
+    @time optimize!(model)
 
     if verbose
         if JuMP.has_values(model)
             @info "Solution Found"
             # println(model)
-            @info "Saving Model to [model.lp]"
-            open("model.lp", "w") do f
-                print(f, model)
-            end
             @info "Objective Value" JuMP.objective_value(model)
 
         else
