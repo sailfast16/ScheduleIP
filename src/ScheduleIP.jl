@@ -87,7 +87,7 @@ function solveSchedule(a,b,p, num_mcs::Int, num_threads::Int; verbose = true)
     @constraint(model, End, [S[i,k] for k in 1:num_mcs for i in 1:num_jobs] .<= [(b[i]-p[i])*X[i,k] for k in 1:num_mcs for i in 1:num_jobs])
 
     # Assign Constraint:
-    @constraint(model, assign[i=1:num_jobs], [sum(X[i,k] for k in 1:num_mcs)] .<= 1)
+    @constraint(model, assign[i=1:num_jobs], [sum(X[i,k] for k in 1:num_mcs)] .== 1)
 
     @info "Model: " model
     @info "Attempting to Find a Solution"
