@@ -30,12 +30,12 @@ function getlanelength(b)
     lane_length = maximum(b)
 end
 
-function solveSchedule(a,b,p, num_mcs::Int, num_threads::Int; verbose = true)
+function solveSchedule(a,b,p, num_mcs::Int, EPGAP::Float64, num_threads::Int; verbose = true)
     lane_length = getlanelength(b)
     num_jobs = length(a)
 
     @info "Creating IP Model"
-    model = Model(with_optimizer(CPLEX.Optimizer, CPX_PARAM_MIPDISPLAY=3, CPX_PARAM_THREADS=num_threads))
+    model = Model(with_optimizer(CPLEX.Optimizer, CPX_PARAM_EPGAP=EPGAP, CPXPARAM_MIP_Display=4, CPXPARAM_Parallel=1, CPXPARAM_Threads=num_threads))
 
     @info "Adding Variables to Model"
     # Job i on Machine k
@@ -50,7 +50,7 @@ function solveSchedule(a,b,p, num_mcs::Int, num_threads::Int; verbose = true)
     # Objective: Minimize ∑∑ X[i,k]
     @info "Setting Model Objective"
     w = sum(X);
-    @objective(model, Min, w);
+    @objective(model, Max, w);
 
     @info "Adding Constraints to Model"
     # Create Before/ After Constraint
@@ -87,12 +87,12 @@ function solveSchedule(a,b,p, num_mcs::Int, num_threads::Int; verbose = true)
     @constraint(model, End, [S[i,k] for k in 1:num_mcs for i in 1:num_jobs] .<= [(b[i]-p[i])*X[i,k] for k in 1:num_mcs for i in 1:num_jobs])
 
     # Assign Constraint:
-    @constraint(model, assign[i=1:num_jobs], [sum(X[i,k] for k in 1:num_mcs)] .== 1)
+    @constraint(model, assign[i=1:num_jobs], [sum(X[i,k] for k in 1:num_mcs)] .<= 1)
 
     @info "Model: " model
     @info "Attempting to Find a Solution"
 
-    @time optimize!(model)
+    @timed optimize!(model)
 
     if verbose
         if JuMP.has_values(model)
